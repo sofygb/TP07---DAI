@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { getPlatos, getInformacionReceta } from "../Consultas";
+import { getPlatos, getInformacionReceta, getPlatosByName } from "../Consultas";
 import * as React from "react";
 import { Portal, Button, PaperProvider } from "react-native-paper";
-import {Alert, Modal, StyleSheet, Text, Pressable, View} from 'react-native';
+import {Alert, Modal, StyleSheet, Text, Pressable, View, FlatList} from 'react-native';
+import { value, SearchBar } from "@rneui/base";
+import Lupa from './img/lupita.png'
 
 export const Home = () => {
   const [platos, setPlatos] = useState(null);
   const [recetas, setRecetas] = useState(null);
+  const [value, setValue] = React.useState("");
+  const [resultado, setResultado] = React.useState(null);
 
   const traerPlatos = async () => {
     const data = await getPlatos();
@@ -32,8 +36,49 @@ export const Home = () => {
   console.log(modalVisible);
   const containerStyle = { backgroundColor: "white", padding: 20 };
 
+  const resultadoQuery = async (input) => {
+    const data = await getPlatosByName(input)
+    setResultado([data])
+    console.log(data)
+  }
+
   return (
     <>
+      <h5>Buscador:</h5>
+    <SearchBar
+      platform="default"
+      containerStyle={{backgroundColor: 'white'}}
+      inputContainerStyle={{backgroundColor: 'rgb(227 229 231)'}}
+      inputStyle={{color: 'gray'}}
+      leftIconContainerStyle={{}}
+      rightIconContainerStyle={{}}
+      searchIcon={Lupa}
+      lightTheme
+      loadingProps={{}}
+      onChangeText={newVal => setValue(newVal)}
+      onClearText={() => console.log(onClearText())}
+      placeholder="Buscar comida..."
+      placeholderTextColor="#888"
+      round
+      showCancel
+      cancelButtonTitle="Cancel"
+      cancelButtonProps={{}}
+      onCancel={() => console.log(onCancel())}
+      value={value}
+    />
+    <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
+
+    <h5>Resultados:</h5>
+    {resultado != null && 
+    resultado.map((plato) => (
+      <>
+        <div id={plato.id} style={styles.card}>
+          
+        </div>
+      </>
+    ))}
+
+
       <h5>Menú:</h5>
       {platos != null &&
         platos.map((plato) => (
@@ -41,7 +86,6 @@ export const Home = () => {
             <img src={plato.image} style={styles.img} alt="" />
             <p style={styles.text}>Nombre: {plato.title}</p>
             <p style={styles.text}>Precio: ${plato.pricePerServing}</p>
-            {/*Cambiar el formato del modal, no cierra */}
             <PaperProvider>
               <Portal>
                 <Modal
@@ -106,7 +150,7 @@ export const Home = () => {
             <p>Apto para celíacos: {receta.glutenFree}</p>
             <p>Apto para veganos: {receta.vegan}</p>
             <p>Apto para vegetarianos: {receta.vegetarian}</p>
-            <p>Platos para: {receta.dishTypes.map((comidas) => comidas)}</p>
+            <p>Platos para: {receta.dishTypes.map((comidas) => comidas + " - ")}</p>
           </div>
         ))}
     </>

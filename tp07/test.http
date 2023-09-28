@@ -1,0 +1,5 @@
+//INSTALAR REST CLIENT PRIMERO
+@link1 = https://api.spoonacular.com/food/menuItems/search?query=burger&apiKey=fa048256202b4bdc8b079fae6bdb4426
+
+###
+GET {{link1}}

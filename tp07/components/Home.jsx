@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPlatos, getInformacionReceta, getPlatosByName } from "../Consultas";
+import { getPlatos, getInformacionReceta, getPlatosByName, getInformacionRecetaById } from "../Consultas";
 import * as React from "react";
 import { Portal, Button, PaperProvider } from "react-native-paper";
 import {Alert, Modal, StyleSheet, Text, Pressable, View, FlatList} from 'react-native';
@@ -38,9 +38,19 @@ export const Home = () => {
 
   const resultadoQuery = async (input) => {
     const data = await getPlatosByName(input)
-    setResultado([data])
+    setResultado(data)
     console.log(data)
   }
+  /*
+  useEffect(() => {
+    detalleQuery
+  }, [resultado]) ERROR, VER COMO HACER PARA TRAER LAS RECETAS DE LOS PLATOS Y QUE ESPERE A Q SE ABRA EL MODAL*/
+
+  const detalleQuery = async (id) => {
+    const data = await getInformacionRecetaById(id)
+    setRecetas([data])
+  }
+  setModalVisible(!modalVisible)
 
   return (
     <>
@@ -69,23 +79,15 @@ export const Home = () => {
     <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
 
     <h5>Resultados:</h5>
+    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
+
     {resultado != null && 
     resultado.map((plato) => (
       <>
         <div id={plato.id} style={styles.card}>
-          
-        </div>
-      </>
-    ))}
-
-
-      <h5>Menú:</h5>
-      {platos != null &&
-        platos.map((plato) => (
-          <div id={plato.id} style={styles.card}>
-            <img src={plato.image} style={styles.img} alt="" />
+        <img src={plato.image} style={styles.img} alt="" />
             <p style={styles.text}>Nombre: {plato.title}</p>
-            <p style={styles.text}>Precio: ${plato.pricePerServing}</p>
+            <p style={styles.text}>Cadena: {plato.restaurantChain}</p>
             <PaperProvider>
               <Portal>
                 <Modal
@@ -96,6 +98,74 @@ export const Home = () => {
                   }}
                   contentContainerStyle={containerStyle}
                   style={{ width: "400%"}}
+                >
+                  <div style={{ display: 'flex',marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center'}}>
+
+                  {<Text>
+                    {recetas != null &&
+                      recetas.map((receta) => (
+                        <div id={receta.id}>
+                        <p>Nombre: {receta.title}</p>
+                        <p>Porciones por plato: ${receta.servings}</p>
+                        <p>Precio: ${receta.pricePerServing}</p>
+                        <p>
+                        Tiempo de preparación: {receta.readyInMinutes}{" "}
+                        minutos
+                        </p>
+                        <p>HealthScore: {receta.healthScore}</p>
+                        <p>Libre de lactosa: {receta.dairyFree}</p>
+                        <p>Keto: {receta.ketogenic}</p>
+                        <p>Apto para celíacos: {receta.glutenFree}</p>
+                        <p>Apto para veganos: {receta.vegan}</p>
+                        <p>Apto para vegetarianos: {receta.vegetarian}</p>
+                        <p>
+                        Platos para:{" "}
+                        {receta.dishTypes.map((comidas) => comidas)}
+                        </p>
+                        </div>
+                        ))}
+                      </Text>}
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => {detalleQuery(plato.id)}}>
+                    <Text style={styles.textStyle}>Hide Modal</Text>
+                  </Pressable>
+                  </div>
+                </Modal>
+              </Portal>
+              <Button style={{ marginTop: 30 }} onPress={showModal}>
+                Show
+              </Button>
+            </PaperProvider>
+        </div>
+      </>
+    ))}
+</div>
+    {/* id: 306187
+image: "https://spoonacular.com/menuItemImages/hamburger.jpg"
+imageType: "jpg"
+restaurantChain: "Garfield's Restaurant & Pub"
+servings: {number: 1, size: null, unit: null}
+title: "Burger"*/}
+
+
+      <h5>Menú:</h5>
+      {/* platos != null &&
+        platos.map((plato) => (
+          <div id={plato.id} style={styles.card}>
+          <img src={plato.image} style={styles.img} alt="" />
+          <p style={styles.text}>Nombre: {plato.title}</p>
+          <p style={styles.text}>Precio: ${plato.pricePerServing}</p>
+          <PaperProvider>
+          <Portal>
+          <Modal
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+          contentContainerStyle={containerStyle}
+          style={{ width: "400%"}}
                 >
                   <div style={{ display: 'flex',marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' }}> //    display: flex;
 
@@ -136,7 +206,7 @@ export const Home = () => {
               </Button>
             </PaperProvider>
           </div>
-        ))}
+                      )) */}
       {recetas != null &&
         recetas.map((receta) => (
           <div id={receta.id}>
@@ -160,10 +230,11 @@ export const Home = () => {
 const styles = StyleSheet.create({
   card: {
     flexDirection: "column",
-    width: "30%",
+    width: "80%",
     borderRadius: "10%",
     backgroundColor: "#7a5d3b",
     boxShadow: "13px 10px 15px 0px #00000036",
+    marginBottom: "3rem"
   },
   text: {
     textAlign: "left",
@@ -173,6 +244,9 @@ const styles = StyleSheet.create({
     paddingBottom: "15px",
     display: "revert",
     marginLeft: "1rem",
+    marginLeft: '1.4rem',
+    padding: '1px',
+    paddingRight: '30px',
   },
   img: {
     width: "100%",

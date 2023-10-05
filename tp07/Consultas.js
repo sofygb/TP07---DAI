@@ -19,25 +19,25 @@ const API4 = "https://api.spoonacular.com/recipes/"
 //https://spoonacular.com/food-api/docs#Search-Recipes-Complex 
 
 export const getPlatos = async () => {
-    const resp = await fetch(`${API1}${keycitomate73}`);
+    const resp = await fetch(`${API1}${key}`);
     const data = await resp.json();
     return data;
 }
 
 export const getInformacionReceta = async () => {
-    const resp = await fetch(`${API2}${keycitomate73}`);
+    const resp = await fetch(`${API2}${key}`);
     const data = await resp.json();
     return data;
 }
 
 export const getPlatosByName = async (input) => {
-    const resp = await fetch(`${API3}query=${input}&${keycitomate73}`);
+    const resp = await fetch(`${API3}query=${input}&${key}`);
     const data = await resp.json();
     return data.menuItems;
 }
 
 export const getInformacionRecetaById = async (id) => {
-    const resp = await fetch(`${API4}${id}/information?includeNutrition=false&${keycitomate73}`);
+    const resp = await fetch(`${API4}${id}/information?includeNutrition=false&${key}`);
     const data = await resp.json();
     return data;
 }

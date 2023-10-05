@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { getPlatos, getInformacionReceta, getPlatosByName, getInformacionRecetaById } from "../Consultas";
 import * as React from "react";
 import { Portal, Button, PaperProvider } from "react-native-paper";
-import {Alert, Modal, StyleSheet, Text, Pressable, View, FlatList} from 'react-native';
+import { Alert, Modal, StyleSheet, Text, Pressable, View, FlatList } from 'react-native';
 import { value, SearchBar } from "@rneui/base";
 import Lupa from './img/lupita.png'
 
 export const Home = () => {
   const [platos, setPlatos] = useState(null);
+  const [detallePlatos, setDetallePlatos] = useState(null);
   const [recetas, setRecetas] = useState(null);
   const [value, setValue] = React.useState("");
   const [resultado, setResultado] = React.useState(null);
@@ -15,7 +16,7 @@ export const Home = () => {
   const traerPlatos = async () => {
     const data = await getPlatos();
     console.log(data);
-    setPlatos([data]);
+    //setPlatos([data]);
   };
   const traerRecetas = async () => {
     const data = await getInformacionReceta();
@@ -41,172 +42,141 @@ export const Home = () => {
     setResultado(data)
     console.log(data)
   }
-  /*
+  console.error("XXX")
+
   useEffect(() => {
-    detalleQuery
-  }, [resultado]) ERROR, VER COMO HACER PARA TRAER LAS RECETAS DE LOS PLATOS Y QUE ESPERE A Q SE ABRA EL MODAL*/
+    //detalleQuery()
+  }, [resultado]) //ERROR, VER COMO HACER PARA TRAER LAS RECETAS DE LOS PLATOS Y QUE ESPERE A Q SE ABRA EL MODAL
 
   const detalleQuery = async (id) => {
     const data = await getInformacionRecetaById(id)
     setRecetas([data])
   }
-  setModalVisible(!modalVisible)
+  //setModalVisible(!modalVisible)
 
   return (
     <>
       <h5>Buscador:</h5>
-    <SearchBar
-      platform="default"
-      containerStyle={{backgroundColor: 'white'}}
-      inputContainerStyle={{backgroundColor: 'rgb(227 229 231)'}}
-      inputStyle={{color: 'gray'}}
-      leftIconContainerStyle={{}}
-      rightIconContainerStyle={{}}
-      searchIcon={Lupa}
-      lightTheme
-      loadingProps={{}}
-      onChangeText={newVal => setValue(newVal)}
-      onClearText={() => console.log(onClearText())}
-      placeholder="Buscar comida..."
-      placeholderTextColor="#888"
-      round
-      showCancel
-      cancelButtonTitle="Cancel"
-      cancelButtonProps={{}}
-      onCancel={() => console.log(onCancel())}
-      value={value}
-    />
-    <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
+      <SearchBar
+        platform="default"
+        containerStyle={{ backgroundColor: 'white' }}
+        inputContainerStyle={{ backgroundColor: 'rgb(227 229 231)' }}
+        inputStyle={{ color: 'gray' }}
+        leftIconContainerStyle={{}}
+        rightIconContainerStyle={{}}
+        searchIcon={Lupa}
+        lightTheme
+        loadingProps={{}}
+        onChangeText={newVal => setValue(newVal)}
+        onClearText={() => console.log(onClearText())}
+        placeholder="Buscar comida..."
+        placeholderTextColor="#888"
+        round
+        showCancel
+        cancelButtonTitle="Cancel"
+        cancelButtonProps={{}}
+        onCancel={() => console.log(onCancel())}
+        value={value}
+      />
+      <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
 
-    <h5>Resultados:</h5>
-    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
+      <h5>Resultados:</h5>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
 
-    {resultado != null && 
-    resultado.map((plato) => (
-      <>
-        <div id={plato.id} style={styles.card}>
-        <img src={plato.image} style={styles.img} alt="" />
-            <p style={styles.text}>Nombre: {plato.title}</p>
-            <p style={styles.text}>Cadena: {plato.restaurantChain}</p>
-            <PaperProvider>
-              <Portal>
-                <Modal
-                  visible={modalVisible}
-                  onRequestClose={() => {
-                    Alert.alert("Modal has been closed.");
-                    setModalVisible(!modalVisible);
-                  }}
-                  contentContainerStyle={containerStyle}
-                  style={{ width: "400%"}}
-                >
-                  <div style={{ display: 'flex',marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center'}}>
-
-                  {<Text>
-                    {recetas != null &&
-                      recetas.map((receta) => (
-                        <div id={receta.id}>
-                        <p>Nombre: {receta.title}</p>
-                        <p>Porciones por plato: ${receta.servings}</p>
-                        <p>Precio: ${receta.pricePerServing}</p>
-                        <p>
-                        Tiempo de preparación: {receta.readyInMinutes}{" "}
-                        minutos
-                        </p>
-                        <p>HealthScore: {receta.healthScore}</p>
-                        <p>Libre de lactosa: {receta.dairyFree}</p>
-                        <p>Keto: {receta.ketogenic}</p>
-                        <p>Apto para celíacos: {receta.glutenFree}</p>
-                        <p>Apto para veganos: {receta.vegan}</p>
-                        <p>Apto para vegetarianos: {receta.vegetarian}</p>
-                        <p>
-                        Platos para:{" "}
-                        {receta.dishTypes.map((comidas) => comidas)}
-                        </p>
-                        </div>
-                        ))}
-                      </Text>}
-                  <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => {detalleQuery(plato.id)}}>
-                    <Text style={styles.textStyle}>Hide Modal</Text>
-                  </Pressable>
-                  </div>
-                </Modal>
-              </Portal>
-              <Button style={{ marginTop: 30 }} onPress={showModal}>
-                Show
-              </Button>
-            </PaperProvider>
-        </div>
-      </>
-    ))}
-</div>
-    {/* id: 306187
-image: "https://spoonacular.com/menuItemImages/hamburger.jpg"
-imageType: "jpg"
-restaurantChain: "Garfield's Restaurant & Pub"
-servings: {number: 1, size: null, unit: null}
-title: "Burger"*/}
+        {resultado != null &&
+          resultado.map((plato) => (
+            <>
+              <div id={plato.id} style={styles.card}>
+                <img src={plato.image} style={styles.img} alt="" />
+                <p style={styles.text}>Nombre: {plato.title}</p>
+                <p style={styles.text}>Cadena: {plato.restaurantChain}</p>
+                <PaperProvider>
+                  <Portal>
+                    <Modal
+                      visible={modalVisible}
+                      onRequestClose={() => {
+                        Alert.alert("Modal has been closed.");
+                        setModalVisible(!modalVisible);
+                      }}
+                      contentContainerStyle={containerStyle}
+                      style={{ width: "400%" }}
+                    >
+                      <div style={{ display: 'flex', marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' }}>
+                        {setDetallePlatos([(detallePlatos !== null ? [...detallePlatos] : [...{}]), detalleQuery(plato.id)])}{console.log(detallePlatos)}
+                        {
+                          detallePlatos.findIndex((elPlato) => elPlato.id === plato.id) !== -1 ?
+                          (
+                            <div id={detallePlatos[plato.id].id}>
+                                <p>Nombre: {detallePlatos[plato.id].title}</p>
+                                <p>Porciones por plato: ${detallePlatos[plato.id].servings}</p>
+                                <p>Precio: ${detallePlatos[plato.id].pricePerServing}</p>
+                                <p>
+                                  Tiempo de preparación: {detallePlatos[plato.id].readyInMinutes}{" "}
+                                  minutos
+                                </p>
+                                <p>HealthScore: {detallePlatos[plato.id].healthScore}</p>
+                                <p>Libre de lactosa: {detallePlatos[plato.id].dairyFree}</p>
+                                <p>Keto: {detallePlatos[plato.id].ketogenic}</p>
+                                <p>Apto para celíacos: {detallePlatos[plato.id].glutenFree}</p>
+                                <p>Apto para veganos: {detallePlatos[plato.id].vegan}</p>
+                                <p>Apto para vegetarianos: {detallePlatos[plato.id].vegetarian}</p>
+                                <p>
+                                  Platos para:{" "}
+                                  {detallePlatos[plato.id].dishTypes.map((comidas) => comidas)}
+                                </p>
+                                {/*detallePlatos.findIndex((plato) => )*/}
+                                <Button style={{ marginTop: 30 }} onPress={showModal}>
+                                  Show
+                                </Button>
+                              </div>
+                          ) : <p>No cargó aun</p>
+                        }
+                        
+                        {<Text>
+                          {detallePlatos != null &&
+                            detallePlatos.map((receta) => (
+                              console.log(receta),
+                              <div id={receta.id}>
+                                <p>Nombre: {receta.title}</p>
+                                <p>Porciones por plato: ${receta.servings}</p>
+                                <p>Precio: ${receta.pricePerServing}</p>
+                                <p>
+                                  Tiempo de preparación: {receta.readyInMinutes}{" "}
+                                  minutos
+                                </p>
+                                <p>HealthScore: {receta.healthScore}</p>
+                                <p>Libre de lactosa: {receta.dairyFree}</p>
+                                <p>Keto: {receta.ketogenic}</p>
+                                <p>Apto para celíacos: {receta.glutenFree}</p>
+                                <p>Apto para veganos: {receta.vegan}</p>
+                                <p>Apto para vegetarianos: {receta.vegetarian}</p>
+                                <p>
+                                  Platos para:{" "}
+                                  {receta.dishTypes.map((comidas) => comidas)}
+                                </p>
+                                {/*detallePlatos.findIndex((plato) => )*/}
+                                <Button style={{ marginTop: 30 }} onPress={showModal}>
+                                  Show
+                                </Button>
+                              </div>
+                            ))}
+                        </Text>}
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => { setModalVisible(!modalVisible) }}>
+                          <Text style={styles.textStyle}>Hide Modal</Text>
+                        </Pressable>
+                      </div>
+                    </Modal>
+                  </Portal>
+                </PaperProvider>
+              </div>
+            </>
+          ))}
+      </div>
 
 
       <h5>Menú:</h5>
-      {/* platos != null &&
-        platos.map((plato) => (
-          <div id={plato.id} style={styles.card}>
-          <img src={plato.image} style={styles.img} alt="" />
-          <p style={styles.text}>Nombre: {plato.title}</p>
-          <p style={styles.text}>Precio: ${plato.pricePerServing}</p>
-          <PaperProvider>
-          <Portal>
-          <Modal
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
-          contentContainerStyle={containerStyle}
-          style={{ width: "400%"}}
-                >
-                  <div style={{ display: 'flex',marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' }}> //    display: flex;
-
-                  <Text>
-                    {recetas != null &&
-                      recetas.map((receta) => (
-                        <div id={receta.id}>
-                          <p>Nombre: {receta.title}</p>
-                          <p>Porciones por plato: ${receta.servings}</p>
-                          <p>Precio: ${receta.pricePerServing}</p>
-                          <p>
-                            Tiempo de preparación: {receta.readyInMinutes}{" "}
-                            minutos
-                          </p>
-                          <p>HealthScore: {receta.healthScore}</p>
-                          <p>Libre de lactosa: {receta.dairyFree}</p>
-                          <p>Keto: {receta.ketogenic}</p>
-                          <p>Apto para celíacos: {receta.glutenFree}</p>
-                          <p>Apto para veganos: {receta.vegan}</p>
-                          <p>Apto para vegetarianos: {receta.vegetarian}</p>
-                          <p>
-                            Platos para:{" "}
-                            {receta.dishTypes.map((comidas) => comidas)}
-                          </p>
-                        </div>
-                      ))}
-                  </Text>
-                  <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={styles.textStyle}>Hide Modal</Text>
-                  </Pressable>
-                  </div>
-                </Modal>
-              </Portal>
-              <Button style={{ marginTop: 30 }} onPress={showModal}>
-                Show
-              </Button>
-            </PaperProvider>
-          </div>
-                      )) */}
       {recetas != null &&
         recetas.map((receta) => (
           <div id={receta.id}>
@@ -226,6 +196,8 @@ title: "Burger"*/}
     </>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   card: {
@@ -287,3 +259,67 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
 });
+
+{/* platos != null &&
+platos.map((plato) => (
+  <div id={plato.id} style={styles.card}>
+  <img src={plato.image} style={styles.img} alt="" />
+  <p style={styles.text}>Nombre: {plato.title}</p>
+  <p style={styles.text}>Precio: ${plato.pricePerServing}</p>
+  <PaperProvider>
+  <Portal>
+  <Modal
+  visible={modalVisible}
+  onRequestClose={() => {
+    Alert.alert("Modal has been closed.");
+    setModalVisible(!modalVisible);
+  }}
+  contentContainerStyle={containerStyle}
+  style={{ width: "400%"}}
+  >
+  <div style={{ display: 'flex',marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' }}> //    display: flex;
+  
+  <Text>
+  {recetas != null &&
+    recetas.map((receta) => (
+      <div id={receta.id}>
+      <p>Nombre: {receta.title}</p>
+      <p>Porciones por plato: ${receta.servings}</p>
+      <p>Precio: ${receta.pricePerServing}</p>
+      <p>
+      Tiempo de preparación: {receta.readyInMinutes}{" "}
+      minutos
+      </p>
+      <p>HealthScore: {receta.healthScore}</p>
+      <p>Libre de lactosa: {receta.dairyFree}</p>
+      <p>Keto: {receta.ketogenic}</p>
+      <p>Apto para celíacos: {receta.glutenFree}</p>
+      <p>Apto para veganos: {receta.vegan}</p>
+      <p>Apto para vegetarianos: {receta.vegetarian}</p>
+      <p>
+      Platos para:{" "}
+      {receta.dishTypes.map((comidas) => comidas)}
+      </p>
+      </div>
+      ))}
+      </Text>
+      <Pressable
+      style={[styles.button, styles.buttonClose]}
+      onPress={() => setModalVisible(!modalVisible)}>
+      <Text style={styles.textStyle}>Hide Modal</Text>
+      </Pressable>
+      </div>
+      </Modal>
+      </Portal>
+      <Button style={{ marginTop: 30 }} onPress={showModal}>
+      Show
+      </Button>
+      </PaperProvider>
+      </div>
+    )) */}
+{/* id: 306187
+    image: "https://spoonacular.com/menuItemImages/hamburger.jpg"
+    imageType: "jpg"
+    restaurantChain: "Garfield's Restaurant & Pub"
+    servings: {number: 1, size: null, unit: null}
+  title: "Burger"*/}

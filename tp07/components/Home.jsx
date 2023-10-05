@@ -8,7 +8,7 @@ import Lupa from './img/lupita.png'
 
 export const Home = () => {
   const [platos, setPlatos] = useState(null);
-  const [detallePlatos, setDetallePlatos] = useState(null);
+  const [detallePlato, setDetallePlato] = useState(null);
   const [recetas, setRecetas] = useState(null);
   const [value, setValue] = React.useState("");
   const [resultado, setResultado] = React.useState(null);
@@ -42,7 +42,6 @@ export const Home = () => {
     setResultado(data)
     console.log(data)
   }
-  console.error("XXX")
 
   useEffect(() => {
     //detalleQuery()
@@ -50,7 +49,7 @@ export const Home = () => {
 
   const detalleQuery = async (id) => {
     const data = await getInformacionRecetaById(id)
-    setRecetas([data])
+    setDetallePlato(data)
   }
   //setModalVisible(!modalVisible)
 
@@ -81,16 +80,21 @@ export const Home = () => {
       <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
 
       <h5>Resultados:</h5>
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={styles.card2}>
 
-        {resultado != null &&
+        {resultado != null && //Resultado de la búsqueda
           resultado.map((plato) => (
             <>
+              {/* La card */}
               <div id={plato.id} style={styles.card}>
                 <img src={plato.image} style={styles.img} alt="" />
                 <p style={styles.text}>Nombre: {plato.title}</p>
                 <p style={styles.text}>Cadena: {plato.restaurantChain}</p>
+                <Button style={{ marginTop: 30 }} onPress={() => {detalleQuery(plato.id), setModalVisible(!modalVisible)}}>
+                  Show
+                </Button>
                 <PaperProvider>
+                  {/* El Modal */}
                   <Portal>
                     <Modal
                       visible={modalVisible}
@@ -101,65 +105,31 @@ export const Home = () => {
                       contentContainerStyle={containerStyle}
                       style={{ width: "400%" }}
                     >
-                      <div style={{ display: 'flex', marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' }}>
-                        {setDetallePlatos([(detallePlatos !== null ? [...detallePlatos] : [...{}]), detalleQuery(plato.id)])}{console.log(detallePlatos)}
-                        {
-                          detallePlatos.findIndex((elPlato) => elPlato.id === plato.id) !== -1 ?
-                          (
-                            <div id={detallePlatos[plato.id].id}>
-                                <p>Nombre: {detallePlatos[plato.id].title}</p>
-                                <p>Porciones por plato: ${detallePlatos[plato.id].servings}</p>
-                                <p>Precio: ${detallePlatos[plato.id].pricePerServing}</p>
-                                <p>
-                                  Tiempo de preparación: {detallePlatos[plato.id].readyInMinutes}{" "}
-                                  minutos
-                                </p>
-                                <p>HealthScore: {detallePlatos[plato.id].healthScore}</p>
-                                <p>Libre de lactosa: {detallePlatos[plato.id].dairyFree}</p>
-                                <p>Keto: {detallePlatos[plato.id].ketogenic}</p>
-                                <p>Apto para celíacos: {detallePlatos[plato.id].glutenFree}</p>
-                                <p>Apto para veganos: {detallePlatos[plato.id].vegan}</p>
-                                <p>Apto para vegetarianos: {detallePlatos[plato.id].vegetarian}</p>
-                                <p>
-                                  Platos para:{" "}
-                                  {detallePlatos[plato.id].dishTypes.map((comidas) => comidas)}
-                                </p>
-                                {/*detallePlatos.findIndex((plato) => )*/}
-                                <Button style={{ marginTop: 30 }} onPress={showModal}>
-                                  Show
-                                </Button>
-                              </div>
-                          ) : <p>No cargó aun</p>
-                        }
+                      <div style={styles.modal}>
                         
                         {<Text>
-                          {detallePlatos != null &&
-                            detallePlatos.map((receta) => (
-                              console.log(receta),
-                              <div id={receta.id}>
-                                <p>Nombre: {receta.title}</p>
-                                <p>Porciones por plato: ${receta.servings}</p>
-                                <p>Precio: ${receta.pricePerServing}</p>
+                          {detallePlato != null &&
+                              <div id={detallePlato.id}>
+                                <p>Nombre: {detallePlato.title}</p>
+                                <p>Porciones por plato: ${detallePlato.servings}</p>
+                                <p>Precio: ${detallePlato.pricePerServing}</p>
                                 <p>
-                                  Tiempo de preparación: {receta.readyInMinutes}{" "}
+                                  Tiempo de preparación: {detallePlato.readyInMinutes}{" "}
                                   minutos
                                 </p>
-                                <p>HealthScore: {receta.healthScore}</p>
-                                <p>Libre de lactosa: {receta.dairyFree}</p>
-                                <p>Keto: {receta.ketogenic}</p>
-                                <p>Apto para celíacos: {receta.glutenFree}</p>
-                                <p>Apto para veganos: {receta.vegan}</p>
-                                <p>Apto para vegetarianos: {receta.vegetarian}</p>
+                                <p>HealthScore: {detallePlato.healthScore}</p>
+                                <p>Libre de lactosa: {detallePlato.dairyFree}</p>
+                                <p>Keto: {detallePlato.ketogenic}</p>
+                                <p>Apto para celíacos: {detallePlato.glutenFree}</p>
+                                <p>Apto para veganos: {detallePlato.vegan}</p>
+                                <p>Apto para vegetarianos: {detallePlato.vegetarian}</p>
                                 <p>
                                   Platos para:{" "}
-                                  {receta.dishTypes.map((comidas) => comidas)}
+                                  {detallePlato.dishTypes.map((comidas) => comidas)}
                                 </p>
                                 {/*detallePlatos.findIndex((plato) => )*/}
-                                <Button style={{ marginTop: 30 }} onPress={showModal}>
-                                  Show
-                                </Button>
                               </div>
-                            ))}
+                            }
                         </Text>}
                         <Pressable
                           style={[styles.button, styles.buttonClose]}
@@ -176,7 +146,7 @@ export const Home = () => {
       </div>
 
 
-      <h5>Menú:</h5>
+      {/*<h5>Menú:</h5>
       {recetas != null &&
         recetas.map((receta) => (
           <div id={receta.id}>
@@ -191,8 +161,8 @@ export const Home = () => {
             <p>Apto para veganos: {receta.vegan}</p>
             <p>Apto para vegetarianos: {receta.vegetarian}</p>
             <p>Platos para: {receta.dishTypes.map((comidas) => comidas + " - ")}</p>
-          </div>
-        ))}
+            </div>}
+          ))*/}
     </>
   );
 };
@@ -258,6 +228,10 @@ const styles = StyleSheet.create({
     cursor: "pointer",
     backgroundColor: "white",
   },
+  modal: {
+    display: 'flex', marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' 
+  },
+  card2: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }
 });
 
 {/* platos != null &&
@@ -323,3 +297,29 @@ platos.map((plato) => (
     restaurantChain: "Garfield's Restaurant & Pub"
     servings: {number: 1, size: null, unit: null}
   title: "Burger"*/}
+
+  /*{ setDetallePlatos([(detallePlatos !== null ? [...detallePlatos] : [...{}]), detalleQuery(plato.id)])}{console.log(detallePlatos)}
+  {
+    detallePlatos.findIndex((elPlato) => elPlato.id === plato.id) !== -1 ?
+    (
+      <div id={detallePlatos[plato.id].id}>
+          <p>Nombre: {detallePlatos[plato.id].title}</p>
+          <p>Porciones por plato: ${detallePlatos[plato.id].servings}</p>
+          <p>Precio: ${detallePlatos[plato.id].pricePerServing}</p>
+          <p>
+            Tiempo de preparación: {detallePlatos[plato.id].readyInMinutes}{" "}
+            minutos
+          </p>
+          <p>HealthScore: {detallePlatos[plato.id].healthScore}</p>
+          <p>Libre de lactosa: {detallePlatos[plato.id].dairyFree}</p>
+          <p>Keto: {detallePlatos[plato.id].ketogenic}</p>
+          <p>Apto para celíacos: {detallePlatos[plato.id].glutenFree}</p>
+          <p>Apto para veganos: {detallePlatos[plato.id].vegan}</p>
+          <p>Apto para vegetarianos: {detallePlatos[plato.id].vegetarian}</p>
+          <p>
+            Platos para:{" "}
+            {detallePlatos[plato.id].dishTypes.map((comidas) => comidas)}
+          </p>
+        </div>
+    ) : <p>No cargó aun</p>
+  }*/

@@ -5,6 +5,7 @@ import { Portal, Button, PaperProvider } from "react-native-paper";
 import { Alert, Modal, StyleSheet, Text, Pressable, View, FlatList } from 'react-native';
 import { value, SearchBar } from "@rneui/base";
 import Lupa from './img/lupita.png'
+import { Icon } from '@iconify/react';
 
 export const Home = () => {
   const [platos, setPlatos] = useState(null);
@@ -53,6 +54,10 @@ export const Home = () => {
   }
   //setModalVisible(!modalVisible)
 
+  useEffect(() => {
+    console.log(detallePlato)
+  },[detallePlato])
+
   return (
     <>
       <h5>Buscador:</h5>
@@ -89,10 +94,15 @@ export const Home = () => {
               <div id={plato.id} style={styles.card}>
                 <img src={plato.image} style={styles.img} alt="" />
                 <p style={styles.text}>Nombre: {plato.title}</p>
-                <p style={styles.text}>Cadena: {plato.restaurantChain}</p>
-                <Button style={{ marginTop: 30 }} onPress={() => {detalleQuery(plato.id), setModalVisible(!modalVisible)}}>
+                {/*<p style={styles.text}>Cadena: {plato.restaurantChain}</p>*/}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={() => {detalleQuery(plato.id), setModalVisible(!modalVisible)}}>
                   Show
-                </Button>
+                </button>
+                <button style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={() => {detalleQuery(plato.id), setModalVisible(!modalVisible)}}>
+                <Icon icon="icon-park-solid:add-one" color="white" width={'9rem'} style={{maxHeight: '2.5rem', maxWidth: '5rem'}} />
+                </button>
+                </div>
                 <PaperProvider>
                   {/* El Modal */}
                   <Portal>
@@ -111,21 +121,25 @@ export const Home = () => {
                           {detallePlato != null &&
                               <div id={detallePlato.id}>
                                 <p>Nombre: {detallePlato.title}</p>
-                                <p>Porciones por plato: ${detallePlato.servings}</p>
+                                <p>Porciones: {detallePlato.servings} por plato</p>
                                 <p>Precio: ${detallePlato.pricePerServing}</p>
                                 <p>
                                   Tiempo de preparación: {detallePlato.readyInMinutes}{" "}
                                   minutos
                                 </p>
                                 <p>HealthScore: {detallePlato.healthScore}</p>
-                                <p>Libre de lactosa: {detallePlato.dairyFree}</p>
-                                <p>Keto: {detallePlato.ketogenic}</p>
-                                <p>Apto para celíacos: {detallePlato.glutenFree}</p>
-                                <p>Apto para veganos: {detallePlato.vegan}</p>
-                                <p>Apto para vegetarianos: {detallePlato.vegetarian}</p>
+                                <p>Libre de lactosa: {detallePlato.dairyFree ? "Si" : "No"}</p>
+                                <p>Keto: {detallePlato.ketogenic ? "Si" : "No"}</p>
+                                <p>Apto para celíacos: {detallePlato.glutenFree ? "Si" : "No"}</p>
+                                <p>Apto para veganos: {detallePlato.vegan ? "Si" : "No"}</p>
+                                <p>Apto para vegetarianos: {detallePlato.vegetarian ? "Si" : "No"}</p>
                                 <p>
                                   Platos para:{" "}
-                                  {detallePlato.dishTypes.map((comidas) => comidas)}
+                                  {detallePlato.dishTypes.map((comidas, i) => i === detallePlato.dishTypes.length-1 ? comidas : comidas + ", ")}
+                                </p>
+                                <p>
+                                  Ingredientes:{" "}
+                                  {detallePlato.extendedIngredients.map((obj, i) => i === detallePlato.extendedIngredients.length-1 ? obj.name : obj.name + ", ")}
                                 </p>
                                 {/*detallePlatos.findIndex((plato) => )*/}
                               </div>
@@ -229,7 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   modal: {
-    display: 'flex', marginLeft: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' 
+    display: 'flex', marginLeft: '2rem', marginRight: '2rem', alignSelf: 'center', marginTop: '20%', flexDirection: 'column', alignItems: 'center' 
   },
   card2: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }
 });

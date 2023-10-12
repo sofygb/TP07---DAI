@@ -12,7 +12,8 @@ export const Home = () => {
   const [detallePlato, setDetallePlato] = useState(null);
   const [recetas, setRecetas] = useState(null);
   const [value, setValue] = React.useState("");
-  const [resultado, setResultado] = React.useState(null);
+  const [resultado, setResultado] = React.useState(null); //Platos del buscador
+  
 
   const traerPlatos = async () => {
     const data = await getPlatos();
@@ -29,6 +30,7 @@ export const Home = () => {
     traerPlatos();
     traerRecetas();
     console.log(platos);
+    localStorage.setItem("listaPlatos", JSON.stringify([]))
   }, []);
 
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -58,6 +60,12 @@ export const Home = () => {
     console.log(detallePlato)
   },[detallePlato])
 
+  const agregarAlMenu = (e) => {
+    const dataPrevia = JSON.parse(localStorage.getItem("listaPlatos"))
+    const newId = e
+    localStorage.setItem("listaPlatos", JSON.stringify([...dataPrevia, newId]))
+  }
+
   return (
     <>
       <h5>Buscador:</h5>
@@ -82,7 +90,10 @@ export const Home = () => {
         onCancel={() => console.log(onCancel())}
         value={value}
       />
-      <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
+      <div style={{display: 'flex'}}>
+        <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
+        <Button onPress={}>Ver Menú</Button>
+      </div>
 
       <h5>Resultados:</h5>
       <div style={styles.card2}>
@@ -99,7 +110,7 @@ export const Home = () => {
                 <button style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={() => {detalleQuery(plato.id), setModalVisible(!modalVisible)}}>
                   Show
                 </button>
-                <button style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={() => {detalleQuery(plato.id), setModalVisible(!modalVisible)}}>
+                <button id={plato.id} style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={(e) => {agregarAlMenu(e.currentTarget.id)}}>
                 <Icon icon="icon-park-solid:add-one" color="white" width={'9rem'} style={{maxHeight: '2.5rem', maxWidth: '5rem'}} />
                 </button>
                 </div>

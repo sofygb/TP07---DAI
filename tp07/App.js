@@ -1,12 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { Home } from './components/Home';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Layout } from './components/Layout';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Home/>
-    </View>
+    <BrowserRouter>
+      <div className="App">
+          <Routes>
+            <Route path='/' element={<Layout />}>
+              <Route index element={<Home />}></Route>
+              <Route path='/informacion' element={<Informacion />} ></Route>
+              <Route path='/login' element={<Login />} ></Route>
+              <Route path='*' element={<h1>Not Found</h1>} ></Route>
+            </Route>
+          </Routes> <br></br>
+      </div>
+    </BrowserRouter>
   );
 }
 

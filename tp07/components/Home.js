@@ -5,9 +5,9 @@ import { Portal, Button, PaperProvider } from "react-native-paper";
 import { Alert, Modal, StyleSheet, Text, Pressable, View, FlatList } from 'react-native';
 import { value, SearchBar } from "@rneui/base";
 import Lupa from './img/lupita.png'
-import { Icon } from '@iconify/react';
+import {Icon} from '@iconify/react';
 
-export const Home = () => {
+const Home = () => {
   const [platos, setPlatos] = useState(null);
   const [detallePlato, setDetallePlato] = useState(null);
   const [recetas, setRecetas] = useState(null);
@@ -92,7 +92,7 @@ export const Home = () => {
       />
       <div style={{display: 'flex'}}>
         <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
-        <Button onPress={}>Ver Menú</Button>
+        <Button onPress={() => {}}>Ver Menú</Button>
       </div>
 
       <h5>Resultados:</h5>
@@ -192,6 +192,7 @@ export const Home = () => {
   );
 };
 
+export default Home;
 
 
 const styles = StyleSheet.create({

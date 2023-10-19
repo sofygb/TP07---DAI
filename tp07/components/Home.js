@@ -7,7 +7,7 @@ import { value, SearchBar } from "@rneui/base";
 import Lupa from './img/lupita.png'
 import {Icon} from '@iconify/react';
 
-const Home = () => {
+export default function Home({ navigation }) {
   const [platos, setPlatos] = useState(null);
   const [detallePlato, setDetallePlato] = useState(null);
   const [recetas, setRecetas] = useState(null);
@@ -67,8 +67,8 @@ const Home = () => {
   }
 
   return (
-    <>
-      <h5>Buscador:</h5>
+    <div style={{marginLeft: '1.5rem', marginRight: '1.5rem'}}>
+      <h5>Buscador:</h5>  
       <SearchBar
         platform="default"
         containerStyle={{ backgroundColor: 'white' }}
@@ -92,7 +92,7 @@ const Home = () => {
       />
       <div style={{display: 'flex'}}>
         <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
-        <Button onPress={() => {}}>Ver Menú</Button>
+        <Button onPress={() => {navigation.navigate("Platos")}}>Ver Menú</Button>
       </div>
 
       <h5>Resultados:</h5>
@@ -188,12 +188,9 @@ const Home = () => {
             <p>Platos para: {receta.dishTypes.map((comidas) => comidas + " - ")}</p>
             </div>}
           ))*/}
-    </>
+    </div>
   );
 };
-
-export default Home;
-
 
 const styles = StyleSheet.create({
   card: {

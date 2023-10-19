@@ -1,5 +1,5 @@
 
-const Platos = () => {
+export default function Platos({ navigation }) {
     const listado = JSON.parse(localStorage.getItem("listaPlatos")) || null
     return(
         <>

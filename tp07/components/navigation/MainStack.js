@@ -3,31 +3,44 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Home from '../Home.js'
 import Login from '../Login.js'
 import Platos from '../Platos.js'
+import { ActionTypes, useContextState, setContextState, contextState } from './contextState.js'
 
 const Stack = createNativeStackNavigator()
 
 const MainStack = () => {
+    const { contextState, setContextState } = useContextState()
+
+    //const usuario = localStorage.getItem('usuario') || { logeado: false, historial: [] }
+
     return (
-    <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false,}}>
+        <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false, }}>
 
-                <Stack.Screen 
-                name= 'Login' 
-                component={ Login }
-                />
+                {
+                    contextState.idUsuario != -1 ?
+                        <>
+                            <Stack.Screen
+                                name='Home'
+                                component={Home}
+                            />
 
-                <Stack.Screen 
-                name= 'Home' 
-                component={ Home }
-                />
-                
-                <Stack.Screen 
-                name= 'Platos' 
-                component={ Platos } 
-                />
+                            <Stack.Screen
+                                name='Platos'
+                                component={Platos}
+                            />
+                        </>
+                        :
+                        <Stack.Screen
+                            name='Login'
+                            component={Login}
+                        />
+                }
+
+
+
 
             </Stack.Navigator>
-    </NavigationContainer>
+        </NavigationContainer>
     )
 }
 

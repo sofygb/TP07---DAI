@@ -2,6 +2,8 @@ import { Button, View } from "react-native-web"
 import { useIsFocused } from "@react-navigation/native";
 import { Text, TextInput } from "react-native-paper";
 import { useEffect, useState } from "react";
+import { getToken } from "../Consultas";
+import { ActionTypes, useContextState, setContextState, contextState } from './navigation/contextState'
 
 export default function Login({ navigation }) {
     const isFocused = useIsFocused();
@@ -12,11 +14,39 @@ export default function Login({ navigation }) {
     const [error, setError] = useState(null)
     const [contador, setContador] = useState(0)
 
-    //useEffect(() => {contadorErrores = 0}, [])
+    const { contextState, setContextState } = useContextState()
+    console.log(contextState)
 
-    const validacion = () => {
+    //useEffect(() => {contadorErrores = 0}, [])
+    //https://github.com/CamilaAylenLopez/Challenge-React-Native/blob/main/navigation/AuthContext.js
+
+    const fakeLogin = (email, password) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(async () => {
+                if (await postLogin(email, password) != Error) {
+                    let token = null
+                    token = await postLogin(email, password)
+                    setContextState({
+                        type: ActionTypes.SetToken,
+                        value: token.token
+                    });
+
+                    resolve({ token });
+
+                }
+                reject(new Error('Usuario o contraseña incorrectos'));
+            }, 1000);
+        })
+    }
+
+    const validacion = async () => {
         if (email === 'challenge@alkemy.org' && password === 'react') {
-            navigation.navigate('Home')
+            setContextState({
+                type: ActionTypes.SetSeEstaLogeando,
+                value: true
+            })
+            //const data = await getToken(email, password)
+            //navigation.navigate('Home')
         }
         else {
             setError(`Error: Email y contraseña inválidos (${contador})`)
@@ -35,7 +65,15 @@ export default function Login({ navigation }) {
                 <TextInput style={{ marginBottom: '1rem' }} placeholder="Password" onChangeText={(text) => { setPassword(text) }} value={password} />
             </div>
             <div>
-                <button style={{ alignSelf: 'center', marginBottom: '1rem' }} onClick={() => { validacion() }}>Login</button>
+                {
+                    !contextState.seEstaLogeando ? 
+                    <button style={{ alignSelf: 'center', marginBottom: '1rem' }} onClick={() => { validacion() }}>Login</button>
+                    :
+                    <>
+                    <button style={{ alignSelf: 'center', marginBottom: '1rem' }} onClick={() => { validacion() }} disabled>Login</button> <br></br>
+                    <i>Logeando...</i>
+                    </>
+                }
                 {
                     error != null &&
                     <i>{error}</i>

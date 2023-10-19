@@ -22,6 +22,8 @@ const API4 = "https://api.spoonacular.com/recipes/"
 
 const API5 = 'https://api.spoonacular.com/recipes/complexSearch?'
 
+const API6 ='http://challenge-react.alkemy.org?email='
+
 
 
 //https://api.spoonacular.com/recipes/716429/information?apiKey=0cb9a80046de48228264993c6810fd45&
@@ -48,6 +50,14 @@ export const getPlatosByName = async (input) => {
 
 export const getInformacionRecetaById = async (id) => {
     const resp = await fetch(`${API4}${id}/information?includeNutrition=false&${keypencilkase}`);
+    const data = await resp.json();
+    return data;
+}
+
+export const getToken = async (email, password) => {
+    const resp = await fetch(`${API6}${email}&password=${password}`, {
+        method: 'POST',
+    });
     const data = await resp.json();
     return data;
 }

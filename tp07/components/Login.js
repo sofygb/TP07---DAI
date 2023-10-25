@@ -4,6 +4,7 @@ import { Text, TextInput } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { getToken } from "../Consultas";
 import { ActionTypes, useContextState, setContextState, contextState } from './navigation/contextState'
+import Antirana from './img/antirana.jpg'
 
 export default function Login({ navigation }) {
     const isFocused = useIsFocused();
@@ -45,8 +46,42 @@ export default function Login({ navigation }) {
                 type: ActionTypes.SetSeEstaLogeando,
                 value: true
             })
-            //const data = await getToken(email, password)
-            //navigation.navigate('Home')
+
+            var data = null 
+            try {
+                data = await getToken(email, password)
+            }
+            catch (error){
+                console.error('Error: No se pudo obtener el token. ', error)
+            }
+            finally{
+                console.log(data)
+            setContextState({
+                type: ActionTypes.SetToken,
+                value: data.token
+            })
+            setContextState({
+                type: ActionTypes.SetIdUsuario,
+                value: 0
+            })
+            setContextState({
+                type: ActionTypes.SetMail,
+                value: email
+            })
+            setContextState({
+                type: ActionTypes.SetContrasenia,
+                value: password
+            })
+            setContextState({
+                type: ActionTypes.SetImagen,
+                value: Antirana
+            })
+            setContextState({
+                type: ActionTypes.SetSeEstaLogeando,
+                value: false
+            })
+            navigation.navigate('Home')
+            }
         }
         else {
             setError(`Error: Email y contraseña inválidos (${contador})`)

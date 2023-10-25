@@ -6,6 +6,7 @@ import { Alert, Modal, StyleSheet, Text, Pressable, View, FlatList } from 'react
 import { value, SearchBar } from "@rneui/base";
 import Lupa from './img/lupita.png'
 import {Icon} from '@iconify/react';
+import { ActionTypes, useContextState, setContextState, contextState } from './navigation/contextState'
 
 export default function Home({ navigation }) {
   const [platos, setPlatos] = useState(null);
@@ -13,7 +14,12 @@ export default function Home({ navigation }) {
   const [recetas, setRecetas] = useState(null);
   const [value, setValue] = React.useState("");
   const [resultado, setResultado] = React.useState(null); //Platos del buscador
-  
+  const [aviso, setAviso] = useState(null)
+  const [contador, setContador] = useState(1)
+  const [error, setError] = useState(null)
+  const [contador2, setContador2] = useState(1)
+  const { contextState, setContextState } = useContextState()
+  console.log(contextState)
 
   const traerPlatos = async () => {
     const data = await getPlatos();
@@ -46,10 +52,6 @@ export default function Home({ navigation }) {
     console.log(data)
   }
 
-  useEffect(() => {
-    //detalleQuery()
-  }, [resultado]) //ERROR, VER COMO HACER PARA TRAER LAS RECETAS DE LOS PLATOS Y QUE ESPERE A Q SE ABRA EL MODAL
-
   const detalleQuery = async (id) => {
     const data = await getInformacionRecetaById(id)
     setDetallePlato(data)
@@ -61,9 +63,51 @@ export default function Home({ navigation }) {
   },[detallePlato])
 
   const agregarAlMenu = (e) => {
-    const dataPrevia = JSON.parse(localStorage.getItem("listaPlatos"))
-    const newId = e
-    localStorage.setItem("listaPlatos", JSON.stringify([...dataPrevia, newId]))
+    /**
+     [
+      {
+        porciones: int,
+        plato: {}
+      }
+     ]
+     */
+    const plato = JSON.parse(e)
+    var dataPrevia = JSON.parse(localStorage.getItem("listaPlatos"))
+
+    if(dataPrevia.length < 4){
+      const i = dataPrevia.findIndex((platos) => platos.plato.id === plato.id)
+      if(i !== -1){
+        dataPrevia[i].porciones = dataPrevia[i].porciones + 1
+        localStorage.setItem("listaPlatos", JSON.stringify([...dataPrevia]))
+        setAviso(`Porción agregada! (${contador})`)
+        setContextState({
+          type: ActionTypes.SetCantPlatos,
+          value: contextState.cantPlatos+1
+        })
+        setContextState({
+          type: ActionTypes.SetListaPlatos,
+          value: [...dataPrevia]
+        })
+      }
+      else{
+        localStorage.setItem("listaPlatos", JSON.stringify([...dataPrevia, {porciones:1,plato}]))
+        //console.log(newId)
+        setContador(contador + 1)
+        setAviso(`Plato agregado! (${contador})`)
+        setContextState({
+          type: ActionTypes.SetCantPlatos,
+          value: contextState.cantPlatos+1
+        })
+        setContextState({
+          type: ActionTypes.SetListaPlatos,
+          value: [...dataPrevia, {porciones:1,plato}]
+        })
+      }
+    }
+    else{
+      setContador2(contador2 + 1)
+      setError(`Error: Máximo de platos alcanzado! (${contador2})`)
+    }
   }
 
   return (
@@ -95,6 +139,16 @@ export default function Home({ navigation }) {
         <Button onPress={() => {navigation.navigate("Platos")}}>Ver Menú</Button>
       </div>
 
+      {
+        aviso != null &&
+        <i>{aviso}</i>
+      }
+      <br/>
+      {
+        error != null &&
+        <i>{error}</i>
+      }
+
       <h5>Resultados:</h5>
       <div style={styles.card2}>
 
@@ -110,8 +164,8 @@ export default function Home({ navigation }) {
                 <button style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={() => {detalleQuery(plato.id), setModalVisible(!modalVisible)}}>
                   Show
                 </button>
-                <button id={plato.id} style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={(e) => {agregarAlMenu(e.currentTarget.id)}}>
-                <Icon icon="icon-park-solid:add-one" color="white" width={'9rem'} style={{maxHeight: '2.5rem', maxWidth: '5rem'}} />
+                <button id={plato.id} name={JSON.stringify(plato)} style={{ marginTop: 30, color: 'white', fontWeight: 'bold', backgroundColor: 'rgb(122, 93, 59)', borderWidth: 0, marginBottom: '4%' }} onClick={(e) => {agregarAlMenu(e.currentTarget.name)}}>
+                  <Icon icon="icon-park-solid:add-one" color="white" width={'9rem'} style={{maxHeight: '2.5rem', maxWidth: '5rem'}} />
                 </button>
                 </div>
                 <PaperProvider>

@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Home from '../Home.js'
 import Login from '../Login.js'
-import Platos from '../Platos.js'
+import Menu from '../Menu.js'
 import { ActionTypes, useContextState, setContextState, contextState } from './contextState.js'
 
 const Stack = createNativeStackNavigator()
@@ -25,8 +25,8 @@ const MainStack = () => {
                             />
 
                             <Stack.Screen
-                                name='Platos'
-                                component={Platos}
+                                name='Menu'
+                                component={Menu}
                             />
                         </>
                         :

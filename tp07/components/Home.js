@@ -47,10 +47,16 @@ export default function Home({ navigation }) {
   const containerStyle = { backgroundColor: "white", padding: 20 };
 
   const resultadoQuery = async (input) => {
-    const data = await getPlatosByName(input)
-    setResultado(data)
-    console.log(data)
-  }
+    if(input.length > 2){
+      const data = await getPlatosByName(input)
+      setResultado(data)
+      console.log(data)
+    }
+    else{
+      setError("Error: El mínimo de caracteres necesarios es 3")
+    }
+
+    }
 
   const detalleQuery = async (id) => {
     const data = await getInformacionRecetaById(id)
@@ -79,6 +85,7 @@ export default function Home({ navigation }) {
       if(i !== -1){
         dataPrevia[i].porciones = dataPrevia[i].porciones + 1
         localStorage.setItem("listaPlatos", JSON.stringify([...dataPrevia]))
+        setContador(contador + 1)
         setAviso(`Porción agregada! (${contador})`)
         setContextState({
           type: ActionTypes.SetCantPlatos,
@@ -106,7 +113,7 @@ export default function Home({ navigation }) {
     }
     else{
       setContador2(contador2 + 1)
-      setError(`Error: Máximo de platos alcanzado! (${contador2})`)
+      setError(`Máximo de platos alcanzado! (${contador2})`)
     }
   }
 
@@ -136,7 +143,7 @@ export default function Home({ navigation }) {
       />
       <div style={{display: 'flex'}}>
         <Button onPress={() => resultadoQuery(value)}>Buscar</Button>
-        <Button onPress={() => {navigation.navigate("Platos")}}>Ver Menú</Button>
+        <Button onPress={() => {navigation.navigate("Menu")}}>Ver Menú</Button>
       </div>
 
       {
@@ -146,7 +153,7 @@ export default function Home({ navigation }) {
       <br/>
       {
         error != null &&
-        <i>{error}</i>
+        <i style={{color: 'red'}}>{error}</i>
       }
 
       <h5>Resultados:</h5>

@@ -31,25 +31,25 @@ const API6 ='http://challenge-react.alkemy.org?email='
 //https://spoonacular.com/food-api/docs#Search-Recipes-Complex 
 
 export const getPlatos = async () => {
-    const resp = await fetch(`${API1}${keypencilkase}`);
+    const resp = await fetch(`${API1}${key}`);
     const data = await resp.json();
     return data;
 }
 
 export const getInformacionReceta = async () => {
-    const resp = await fetch(`${API2}${keypencilkase}`);
+    const resp = await fetch(`${API2}${key}`);
     const data = await resp.json();
     return data;
 }
 
 export const getPlatosByName = async (input) => {
-    const resp = await fetch(`${API5}query=${input}&${keypencilkase}`);
+    const resp = await fetch(`${API5}query=${input}&${key}`);
     const data = await resp.json();
     return data.results;
 }
 
 export const getInformacionRecetaById = async (id) => {
-    const resp = await fetch(`${API4}${id}/information?includeNutrition=false&${keypencilkase}`);
+    const resp = await fetch(`${API4}${id}/information?includeNutrition=false&${key}`);
     const data = await resp.json();
     return data;
 }

@@ -68,7 +68,7 @@ export default function Home({ navigation }) {
     console.log(detallePlato)
   },[detallePlato])
 
-  const agregarAlMenu = (e) => {
+  const agregarAlMenu = async (e) => {
     /**
      [
       {
@@ -97,7 +97,9 @@ export default function Home({ navigation }) {
         })
       }
       else{
-        localStorage.setItem("listaPlatos", JSON.stringify([...dataPrevia, {porciones:1,plato}]))
+        const data = await getInformacionRecetaById(plato.id)
+
+        localStorage.setItem("listaPlatos", JSON.stringify([...dataPrevia, {porciones:1,plato: data}]))
         //console.log(newId)
         setContador(contador + 1)
         setAviso(`Plato agregado! (${contador})`)
@@ -109,8 +111,8 @@ export default function Home({ navigation }) {
           type: ActionTypes.SetListaPlatos,
           value: [...dataPrevia, {porciones:1,plato}]
         })
-      }
     }
+      }
     else{
       setContador2(contador2 + 1)
       setError(`Máximo de platos alcanzado! (${contador2})`)

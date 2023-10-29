@@ -18,9 +18,6 @@ export default function Login({ navigation }) {
     const { contextState, setContextState } = useContextState()
     console.log(contextState)
 
-    //useEffect(() => {contadorErrores = 0}, [])
-    //https://github.com/CamilaAylenLopez/Challenge-React-Native/blob/main/navigation/AuthContext.js
-
     const fakeLogin = (email, password) => {
         return new Promise((resolve, reject) => {
             setTimeout(async () => {

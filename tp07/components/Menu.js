@@ -1,10 +1,12 @@
 import { Alert, Modal, StyleSheet, Text, Pressable, View, FlatList } from 'react-native';
 import { getInformacionRecetaById } from "../Consultas";
 import { useState, useEffect } from 'react';
+import { TextInput } from 'react-native-web';
 
 export default function Menu({ navigation }) {
     const [healthScore, setHealthScore] = useState(0)
     const [total, setTotal] = useState(0)
+    const [cantPorciones, setCantPorciones] = useState(0)
     const [listaPlatos, setListaPlatos] = useState(null)
 
     useEffect(() => {
@@ -17,14 +19,28 @@ export default function Menu({ navigation }) {
         if (listaPlatos !== null) {
             var sumaHealthScore = 0
             var precioFinal = 0
+            var porcionesCount = 0
             listaPlatos.map((platos) => {
                 sumaHealthScore += platos.plato.healthScore,
-                precioFinal+=(platos.porciones*platos.plato.pricePerServing)
-            })
-            setHealthScore((sumaHealthScore/listaPlatos.length).toFixed(2))
+                    precioFinal += (platos.porciones * platos.plato.pricePerServing)
+                    porcionesCount += platos.porciones
+                })
+            setHealthScore((sumaHealthScore / listaPlatos.length == 0 ? 1 : listaPlatos.length).toFixed(2))
             setTotal(precioFinal.toFixed(3))
-        } 
-    },[listaPlatos])
+            setCantPorciones(porcionesCount)
+        }
+    }, [listaPlatos])
+
+    const eliminarPlato = (plato) => {
+        const posicion = listaPlatos.findIndex((platos) => platos.plato.id === plato)
+        var lista1 = listaPlatos.slice(0, posicion)
+        var lista2 = listaPlatos.slice(posicion + 1, listaPlatos.length)
+
+        const listaFinal = lista1.concat(lista2)
+
+        setListaPlatos(listaFinal)
+        localStorage.setItem("listaPlatos", JSON.stringify(listaFinal))
+    }
 
     return (
         <div style={{ marginLeft: '1.5rem', marginRight: '1.5rem', display: 'flex', flexDirection: "column" }}>
@@ -32,16 +48,17 @@ export default function Menu({ navigation }) {
 
             {listaPlatos != null &&
                 <>
-                    <i>Cantidad de platos: {listaPlatos.length}</i><br/>
+                    <h2>Platos</h2>
                     {
                         listaPlatos.map((platos) =>
-                        <>
+                            <>
                                 <div style={styles.card}>
                                     <img style={styles.img} src={platos.plato.image} />
-                                    <div style={{...styles.text, marginBottom: '2rem'}}>
+                                    <div style={{ ...styles.text, marginBottom: '2rem' }}>
                                         <p>Nombre: {platos.plato.title}</p>
                                         <p>Precio por porción: ${platos.plato.pricePerServing}</p>
-                                        <i>Cantidad de porciones: {platos.porciones}</i>
+                                        <i>Cantidad de porciones: {platos.porciones}</i><br />
+                                        <a id={platos.plato.id} style={{ alignSelf: 'center', paddingBottom: '2%', fontWeight: 'bold', color: '#e64d4d', textDecoration: 'underline' }} onClick={(e) => eliminarPlato(parseInt(e.target.id))}>Eliminar</a>
                                     </div>
                                 </div>
                             </>
@@ -51,9 +68,12 @@ export default function Menu({ navigation }) {
             }
 
             <h2>Factura</h2>
-            <p>Promedio HealthScore: {healthScore}pts</p> 
-            <p>Total: ${total}</p>
-            <a style={{alignSelf: 'center',paddingBottom: '2%', fontWeight: 'bold', color: '#3887e9', textDecoration: 'underline'}} onClick={() => navigation.navigate("Home")}>Volver</a>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {listaPlatos != null && <><i>Cantidad de platos: {listaPlatos.length}</i><i>Cantidad de porciones: {cantPorciones}</i></>}
+                <p>Promedio HealthScore: {healthScore}pts</p>
+                <p>Total: ${total}</p>
+                <a style={{ alignSelf: 'center', paddingBottom: '2%', fontWeight: 'bold', color: '#3887e9', textDecoration: 'underline' }} onClick={() => navigation.navigate("Home")}>Volver</a>
+            </div>
         </div>
     )
 }
@@ -67,7 +87,7 @@ const styles = StyleSheet.create({
         boxShadow: "13px 10px 15px 0px #00000036",
         marginBottom: "3rem"
     },
-    
+
     text: {
         textAlign: "left",
         color: "#FFFFFF",
